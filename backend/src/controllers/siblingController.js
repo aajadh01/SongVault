@@ -108,10 +108,10 @@ export const createSibling = async (req, res) => {
 
     if (req.files) {
       if (req.files.profileImage && req.files.profileImage[0]) {
-        profileImageUrl = getFileUrl(req.files.profileImage[0], req);
+        profileImageUrl = (await getFileUrl(req.files.profileImage[0], req)) || profileImageUrl;
       }
       if (req.files.coverImage && req.files.coverImage[0]) {
-        coverImageUrl = getFileUrl(req.files.coverImage[0], req);
+        coverImageUrl = (await getFileUrl(req.files.coverImage[0], req)) || coverImageUrl;
       }
     }
 
@@ -176,10 +176,10 @@ export const updateSibling = async (req, res) => {
     // Handle files
     if (req.files) {
       if (req.files.profileImage && req.files.profileImage[0]) {
-        sibling.profileImageUrl = getFileUrl(req.files.profileImage[0], req);
+        sibling.profileImageUrl = (await getFileUrl(req.files.profileImage[0], req)) || sibling.profileImageUrl;
       }
       if (req.files.coverImage && req.files.coverImage[0]) {
-        sibling.coverImageUrl = getFileUrl(req.files.coverImage[0], req);
+        sibling.coverImageUrl = (await getFileUrl(req.files.coverImage[0], req)) || sibling.coverImageUrl;
       }
     }
 

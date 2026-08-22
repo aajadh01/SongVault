@@ -44,16 +44,16 @@ export const createRecording = async (req, res) => {
 
     if (req.files) {
       if (req.files.audio && req.files.audio[0]) {
-        audioUrl = getFileUrl(req.files.audio[0], req);
+        audioUrl = (await getFileUrl(req.files.audio[0], req)) || audioUrl;
       }
       if (req.files.coverImage && req.files.coverImage[0]) {
-        coverImageUrl = getFileUrl(req.files.coverImage[0], req);
+        coverImageUrl = (await getFileUrl(req.files.coverImage[0], req)) || coverImageUrl;
       }
       if (req.files.backgroundVideo && req.files.backgroundVideo[0]) {
-        backgroundVideoUrl = getFileUrl(req.files.backgroundVideo[0], req);
+        backgroundVideoUrl = (await getFileUrl(req.files.backgroundVideo[0], req)) || backgroundVideoUrl;
       }
       if (req.files.backgroundImage && req.files.backgroundImage[0]) {
-        backgroundImageUrl = getFileUrl(req.files.backgroundImage[0], req);
+        backgroundImageUrl = (await getFileUrl(req.files.backgroundImage[0], req)) || backgroundImageUrl;
       }
     }
 
@@ -122,16 +122,16 @@ export const updateRecording = async (req, res) => {
 
     if (req.files) {
       if (req.files.audio && req.files.audio[0]) {
-        recording.audioUrl = getFileUrl(req.files.audio[0], req);
+        recording.audioUrl = (await getFileUrl(req.files.audio[0], req)) || recording.audioUrl;
       }
       if (req.files.coverImage && req.files.coverImage[0]) {
-        recording.coverImageUrl = getFileUrl(req.files.coverImage[0], req);
+        recording.coverImageUrl = (await getFileUrl(req.files.coverImage[0], req)) || recording.coverImageUrl;
       }
       if (req.files.backgroundVideo && req.files.backgroundVideo[0]) {
-        recording.backgroundVideoUrl = getFileUrl(req.files.backgroundVideo[0], req);
+        recording.backgroundVideoUrl = (await getFileUrl(req.files.backgroundVideo[0], req)) || recording.backgroundVideoUrl;
       }
       if (req.files.backgroundImage && req.files.backgroundImage[0]) {
-        recording.backgroundImageUrl = getFileUrl(req.files.backgroundImage[0], req);
+        recording.backgroundImageUrl = (await getFileUrl(req.files.backgroundImage[0], req)) || recording.backgroundImageUrl;
       }
     }
 
