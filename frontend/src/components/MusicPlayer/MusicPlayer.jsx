@@ -38,6 +38,8 @@ export const MusicPlayer = ({
   const [showMessage, setShowMessage] = useState(false);
   const [audioError, setAudioError] = useState(null);
 
+  const isVideoBg = recording?.backgroundMediaType === 'video';
+
   // Format time helpers (mm:ss)
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds) || timeInSeconds === null) return '00:00';
@@ -139,7 +141,7 @@ export const MusicPlayer = ({
   const coverImage = recording?.coverImageUrl || sibling?.coverImageUrl;
 
   return (
-    <div className="relative z-10 w-full max-w-lg mx-auto px-4 py-6 flex flex-col items-center min-h-[90vh] justify-between">
+    <div className="relative z-10 w-full max-w-lg mx-auto px-4 py-6 flex flex-col items-center min-h-[92vh] justify-between">
       {/* Hidden Native Audio Element */}
       <audio
         ref={audioRef}
@@ -162,14 +164,14 @@ export const MusicPlayer = ({
         {recordingsCount > 1 ? (
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full glass-card hover:bg-white/10 text-xs sm:text-sm font-medium text-slate-300 transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full glass-card hover:bg-white/10 text-xs sm:text-sm font-medium text-slate-200 transition-all active:scale-95 shadow"
             aria-label="Back to Memories"
           >
             <ArrowLeft className="w-4 h-4 text-rose-400" />
             <span>Memories</span>
           </button>
         ) : (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold tracking-wider uppercase">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold tracking-wider uppercase shadow">
             <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
             <span>{sibling?.name || 'Vault'}</span>
           </div>
@@ -179,7 +181,7 @@ export const MusicPlayer = ({
           {recording?.personalMessage && (
             <button
               onClick={() => setShowMessage(!showMessage)}
-              className={`p-2.5 rounded-full glass-card transition-all ${
+              className={`p-2.5 rounded-full glass-card transition-all shadow ${
                 showMessage ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' : 'text-slate-300 hover:text-white'
               }`}
               title="Personal Message"
@@ -190,7 +192,7 @@ export const MusicPlayer = ({
 
           <button
             onClick={onLock}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full glass-card hover:bg-rose-500/20 hover:text-rose-300 text-xs font-medium text-slate-400 transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full glass-card hover:bg-rose-500/20 hover:text-rose-300 text-xs font-medium text-slate-300 transition-all shadow"
             title="Lock Memory Vault"
           >
             <Lock className="w-3.5 h-3.5" />
@@ -199,57 +201,51 @@ export const MusicPlayer = ({
         </div>
       </header>
 
-      {/* Main Center Stage: Artwork & Metadata */}
+      {/* Main Center Stage */}
       <div className="w-full flex flex-col items-center my-auto py-4">
-        {/* Vinyl / Cover Artwork with Ambient Glow */}
-        <motion.div
-          animate={isPlaying ? { scale: [1, 1.02, 1] } : { scale: 1 }}
-          transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-          className="relative w-64 h-64 sm:w-72 sm:h-72 mb-6 group"
-        >
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-rose-500/30 via-pink-500/20 to-purple-600/30 blur-2xl group-hover:blur-3xl transition-all duration-700" />
+        {/* Only show Cover Box if NOT Video background */}
+        {!isVideoBg && (
+          <motion.div
+            animate={isPlaying ? { scale: [1, 1.02, 1] } : { scale: 1 }}
+            transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+            className="relative w-64 h-64 sm:w-72 sm:h-72 mb-6 group"
+          >
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-rose-500/30 via-pink-500/20 to-purple-600/30 blur-2xl group-hover:blur-3xl transition-all duration-700" />
 
-          <div className="relative w-full h-full rounded-3xl overflow-hidden glass-panel-glow border-2 border-white/10 shadow-2xl flex items-center justify-center bg-black/40">
-            {coverImage ? (
-              <img
-                src={coverImage}
-                alt={recording?.title || 'Song Cover'}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            ) : (
-              <div className="flex flex-col items-center text-slate-500">
-                <Disc3 className={`w-20 h-20 text-rose-400/80 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }} />
-                <span className="text-xs uppercase tracking-widest mt-2 text-slate-400">Sibling Vault</span>
-              </div>
-            )}
+            <div className="relative w-full h-full rounded-3xl overflow-hidden glass-panel-glow border-2 border-white/10 shadow-2xl flex items-center justify-center bg-black/40">
+              {coverImage ? (
+                <img
+                  src={coverImage}
+                  alt={recording?.title || 'Song Cover'}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex flex-col items-center text-slate-500">
+                  <Disc3 className={`w-20 h-20 text-rose-400/80 ${isPlaying ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }} />
+                  <span className="text-xs uppercase tracking-widest mt-2 text-slate-400">Sibling Vault</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
 
-            {/* Media Type Badge Indicator */}
-            {recording?.backgroundMediaType === 'video' && (
-              <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-semibold text-rose-300 uppercase tracking-widest flex items-center gap-1">
-                <Sparkles className="w-2.5 h-2.5 text-rose-400" />
-                <span>Motion BG</span>
-              </div>
-            )}
-          </div>
-        </motion.div>
-
-        {/* Track Title & Sibling Name */}
+        {/* Track Title & Subtitle with subtle shadow for crystal readability on videos */}
         <div className="text-center px-4 max-w-sm">
-          <div className="text-xs uppercase tracking-widest text-rose-400 font-semibold mb-1 flex items-center justify-center gap-1.5">
+          <div className="text-xs uppercase tracking-widest text-rose-400 font-semibold mb-1 flex items-center justify-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             <Music className="w-3.5 h-3.5" />
             <span>Our Memory Song</span>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight line-clamp-1 mb-1">
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight line-clamp-1 mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
             {recording?.title || 'Untitled Recording'}
           </h2>
 
           {recording?.description ? (
-            <p className="text-slate-400 text-xs sm:text-sm line-clamp-2 leading-relaxed">
+            <p className="text-slate-200 text-xs sm:text-sm line-clamp-2 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] font-medium">
               {recording.description}
             </p>
           ) : (
-            <p className="text-slate-400 text-xs italic">
+            <p className="text-slate-300 text-xs italic drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
               {sibling?.welcomeMessage || 'A special moment in time.'}
             </p>
           )}
@@ -262,13 +258,13 @@ export const MusicPlayer = ({
               initial={{ opacity: 0, y: 10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: 10, height: 0 }}
-              className="w-full mt-4 glass-card rounded-2xl p-4 border border-rose-500/30 text-center relative overflow-hidden"
+              className="w-full mt-4 glass-card rounded-2xl p-4 border border-rose-500/30 text-center relative overflow-hidden shadow-2xl backdrop-blur-xl"
             >
               <div className="flex items-center justify-center gap-1 text-xs text-rose-400 font-semibold uppercase tracking-wider mb-1">
                 <Heart className="w-3 h-3 fill-rose-500" />
                 <span>A Personal Note</span>
               </div>
-              <p className="text-slate-200 text-sm font-serif italic leading-relaxed">
+              <p className="text-slate-100 text-sm font-serif italic leading-relaxed">
                 "{recording.personalMessage}"
               </p>
             </motion.div>
@@ -277,13 +273,13 @@ export const MusicPlayer = ({
 
         {/* Error Feedback */}
         {audioError && (
-          <div className="mt-3 text-xs text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">
+          <div className="mt-3 text-xs text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20 backdrop-blur-md">
             {audioError}
           </div>
         )}
       </div>
 
-      {/* Bottom Controls Area */}
+      {/* Bottom Controls Bar */}
       <div className="w-full glass-panel rounded-3xl p-5 sm:p-6 backdrop-blur-2xl shadow-2xl border border-white/10 mt-4">
         {/* Scrubber Progress Bar */}
         <div className="w-full mb-4">
@@ -301,7 +297,7 @@ export const MusicPlayer = ({
             />
           </div>
 
-          <div className="flex justify-between text-[11px] font-mono text-slate-400 mt-1.5 px-0.5">
+          <div className="flex justify-between text-[11px] font-mono text-slate-300 mt-1.5 px-0.5">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
@@ -325,7 +321,7 @@ export const MusicPlayer = ({
             onClick={onPrev}
             disabled={recordingsCount <= 1}
             className={`p-2.5 rounded-full transition-colors ${
-              recordingsCount > 1 ? 'text-slate-300 hover:text-white active:scale-95' : 'text-slate-600 cursor-not-allowed'
+              recordingsCount > 1 ? 'text-slate-200 hover:text-white active:scale-95' : 'text-slate-600 cursor-not-allowed'
             }`}
             title="Previous Memory"
           >
@@ -351,7 +347,7 @@ export const MusicPlayer = ({
             onClick={onNext}
             disabled={recordingsCount <= 1}
             className={`p-2.5 rounded-full transition-colors ${
-              recordingsCount > 1 ? 'text-slate-300 hover:text-white active:scale-95' : 'text-slate-600 cursor-not-allowed'
+              recordingsCount > 1 ? 'text-slate-200 hover:text-white active:scale-95' : 'text-slate-600 cursor-not-allowed'
             }`}
             title="Next Memory"
           >
@@ -362,7 +358,7 @@ export const MusicPlayer = ({
           <div className="flex items-center gap-1.5">
             <button
               onClick={toggleMute}
-              className="p-2 rounded-full text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-full text-slate-300 hover:text-white transition-colors"
               title={isMuted ? 'Unmute' : 'Mute'}
             >
               {isMuted || volume === 0 ? (

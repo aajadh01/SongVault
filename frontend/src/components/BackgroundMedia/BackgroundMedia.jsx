@@ -30,7 +30,7 @@ export const BackgroundMedia = ({ recording, siblingCover, isPlaying }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             className="absolute inset-0 w-full h-full"
           >
             <video
@@ -40,11 +40,10 @@ export const BackgroundMedia = ({ recording, siblingCover, isPlaying }) => {
               playsInline
               loop
               preload="auto"
-              className="w-full h-full object-cover transform scale-[1.03]"
+              className="w-full h-full object-cover"
             />
-            {/* Cinematic layered gradients */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0e] via-[#0a0a0e]/60 to-[#0a0a0e]/80" />
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+            {/* Subtle soft gradient at top and bottom for readability without dimming video */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 pointer-events-none" />
           </motion.div>
         ) : mediaType === 'image' && imageUrl ? (
           <motion.div
@@ -52,16 +51,16 @@ export const BackgroundMedia = ({ recording, siblingCover, isPlaying }) => {
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
+            transition={{ duration: 1.0, ease: 'easeOut' }}
             className="absolute inset-0 w-full h-full"
           >
             <img
               src={imageUrl}
               alt="Memory Background"
-              className="w-full h-full object-cover filter blur-[2px] brightness-75 transform scale-105 transition-transform duration-1000"
+              className="w-full h-full object-cover brightness-90 transform scale-100 transition-transform duration-1000"
             />
-            {/* Dark gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0e] via-[#0a0a0e]/70 to-[#0a0a0e]/85" />
+            {/* Soft dark gradient for controls */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80 pointer-events-none" />
           </motion.div>
         ) : (
           <motion.div
