@@ -5,13 +5,19 @@ let mongod = null;
 
 export const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/sibling_vault';
+    let rawUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/sibling_vault';
     
-    // Attempt standard connection with 2.5 second timeout
+    // Clean and sanitize URI (strip quotes, whitespace, accidental mongosh prefix)
+    let mongoUri = rawUri.trim().replace(/^["']|["']$/g, '');
+    if (mongoUri.startsWith('mongosh ')) {
+      mongoUri = mongoUri.replace('mongosh ', '').trim().replace(/^["']|["']$/g, '');
+    }
+    
+    // Attempt standard connection with 3 second timeout
     await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 2500,
+      serverSelectionTimeoutMS: 3000,
     });
-    console.log(`✅ MongoDB connected successfully to ${mongoose.connection.host}`);
+    console.log(`✅ MongoDB connected successfully to external database (${mongoose.connection.host})`);
   } catch (err) {
     console.warn(`⚠️ Could not connect to external MongoDB (${err.message}). Initializing embedded in-memory MongoDB fallback...`);
     try {
