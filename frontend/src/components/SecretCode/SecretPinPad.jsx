@@ -123,6 +123,10 @@ export const SecretPinPad = ({ sibling, onUnlock, error, isSubmitting }) => {
     }
   };
 
+  // Determine hint content
+  const hasCustomHint = sibling?.hint && sibling.hint.trim() !== '';
+  const hintText = hasCustomHint ? `"${sibling.hint.trim()}"` : 'Where two special birthdays become one. ❤️';
+
   return (
     <div className="w-full max-w-md mx-auto px-4 py-8 flex flex-col items-center">
       {/* Vault Card Header */}
@@ -182,23 +186,22 @@ export const SecretPinPad = ({ sibling, onUnlock, error, isSubmitting }) => {
             ))}
           </div>
 
-          {/* Hint Section */}
-          {sibling?.hint && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 mb-6 text-center"
-            >
-              <div className="flex items-center justify-center gap-1.5 text-xs text-rose-300 font-medium mb-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Memory Hint</span>
-              </div>
-              <p className="text-sm italic text-slate-300 font-serif">
-                "{sibling.hint}"
-              </p>
-            </motion.div>
-          )}
+          {/* Prominent Hint Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="w-full bg-white/[0.04] border border-rose-500/20 rounded-2xl p-4 mb-6 text-center shadow-inner"
+          >
+            <div className="flex items-center justify-center gap-1.5 text-xs text-rose-300 font-semibold mb-1 uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+              <span>Memory Hint</span>
+              <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+            </div>
+            <p className="text-sm italic text-slate-200 font-serif leading-relaxed">
+              {hintText}
+            </p>
+          </motion.div>
 
           {/* Error Message */}
           <AnimatePresence>
@@ -250,7 +253,7 @@ export const SecretPinPad = ({ sibling, onUnlock, error, isSubmitting }) => {
               </button>
             ))}
             <div className="flex items-center justify-center text-xs text-slate-500 font-mono">
-              {sibling?.cardId}
+              {sibling?.cardId || 'VAULT'}
             </div>
             <button
               type="button"

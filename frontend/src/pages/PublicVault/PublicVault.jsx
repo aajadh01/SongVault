@@ -128,7 +128,7 @@ export const PublicVault = () => {
               className="w-full"
             >
               <SecretPinPad
-                sibling={publicSibling}
+                sibling={currentSibling || publicSibling}
                 onUnlock={handleUnlock}
                 error={codeError}
                 isSubmitting={isSubmittingCode}
