@@ -10,20 +10,14 @@ import {
   Download,
   Copy,
   Check,
-  ExternalLink,
-  Heart,
-  Sparkles,
   CreditCard,
-  Printer,
   Loader2,
-  Sliders,
   Palette,
   Layers,
-  Wand2,
   CheckCircle2,
-  Smartphone,
   Maximize2,
   ShieldCheck,
+  Heart,
 } from 'lucide-react';
 
 export const QRManager = () => {
@@ -36,8 +30,8 @@ export const QRManager = () => {
   const [topText, setTopText] = useState('OUR SONG ♡');
   const [bottomText, setBottomText] = useState('SCAN THE CODE');
   const [theme, setTheme] = useState('lavender'); // 'lavender', 'white', 'dark', 'rose'
-  const [layout, setLayout] = useState('card-print-large'); // 'card-print-large', 'stacked-card'
-  const [qrScaleFactor, setQrScaleFactor] = useState(1.35); // 1.1, 1.35, 1.6
+  const [layout, setLayout] = useState('id-card-stamp'); // 'id-card-stamp', 'card-print-large', 'stacked-card'
+  const [qrScaleFactor, setQrScaleFactor] = useState(1.4);
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
@@ -83,7 +77,7 @@ export const QRManager = () => {
 
       const a = document.createElement('a');
       a.href = dataUrl;
-      a.download = `sibling-card-qr-${selectedSibling.cardId}-${theme}.png`;
+      a.download = `sibling-card-qr-${selectedSibling.cardId}-${layout}-${theme}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -104,7 +98,7 @@ export const QRManager = () => {
   }
 
   const waveHeights = selectedSibling
-    ? getDeterministicWaveHeights(selectedSibling.cardId, layout === 'stacked-card' ? 16 : 14)
+    ? getDeterministicWaveHeights(selectedSibling.cardId, 12)
     : [];
 
   const publicUrl = selectedSibling
@@ -120,7 +114,7 @@ export const QRManager = () => {
           <span>Physical Card Print & QR Studio</span>
         </h1>
         <p className="text-slate-400 text-sm mt-1">
-          Export high-scan **Physical Sibling Card Badges** with enlarged, chunky QR modules guaranteed to scan on plastic cards.
+          Guaranteed high-scan badge formats specifically proportioned for physical Plastic Sibling License cards.
         </p>
       </div>
 
@@ -157,7 +151,7 @@ export const QRManager = () => {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="p-1.5 bg-white rounded-xl shadow flex-shrink-0">
-                        <QRCodeSVG value={sibUrl} size={48} level="M" marginSize={1} />
+                        <QRCodeSVG value={sibUrl} size={48} level="L" marginSize={1} />
                       </div>
 
                       <div className="min-w-0">
@@ -242,7 +236,7 @@ export const QRManager = () => {
                     </div>
                     <div className="flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-medium">
                       <CheckCircle2 className="w-3 h-3" />
-                      <span>Optimized for Plastic Cards</span>
+                      <span>Level-L Chunky QR (Max Scan Speed)</span>
                     </div>
                   </div>
 
@@ -266,8 +260,61 @@ export const QRManager = () => {
                         {topText.toUpperCase()}
                       </div>
 
-                      {layout === 'stacked-card' ? (
-                        /* STACKED LAYOUT (Soundwave Top + Giant Scannable QR in Center) */
+                      {layout === 'id-card-stamp' ? (
+                        /* ID CARD STAMP (Large High-Contrast QR Stamp on Right + Pill Left) */
+                        <div className="flex items-center justify-between gap-3">
+                          {/* Left Pill */}
+                          <div
+                            className={`flex-1 h-14 rounded-full px-3 flex items-center justify-between shadow transition-all ${
+                              theme === 'dark'
+                                ? 'bg-[#181824] text-white border border-white/10'
+                                : theme === 'rose'
+                                ? 'bg-rose-50 text-rose-600'
+                                : theme === 'white'
+                                ? 'bg-white text-black border border-slate-200'
+                                : 'bg-[#E8EAFD] text-[#14162B]'
+                            }`}
+                          >
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                theme === 'dark'
+                                  ? 'bg-white text-black'
+                                  : theme === 'rose'
+                                  ? 'bg-rose-600 text-white'
+                                  : theme === 'white'
+                                  ? 'bg-black text-white'
+                                  : 'bg-[#14162B] text-white'
+                              }`}
+                            >
+                              <Heart className="w-4 h-4 fill-current" />
+                            </div>
+
+                            <div className="flex-1 flex items-center justify-center gap-1 px-2 h-8">
+                              {waveHeights.map((h, i) => (
+                                <div
+                                  key={i}
+                                  className={`w-1.5 rounded-full ${
+                                    theme === 'dark'
+                                      ? 'bg-white'
+                                      : theme === 'rose'
+                                      ? 'bg-rose-600'
+                                      : theme === 'white'
+                                      ? 'bg-black'
+                                      : 'bg-[#14162B]'
+                                  }`}
+                                  style={{ height: `${Math.max(25, h * 100)}%` }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Large Dedicated High-Scan QR Stamp */}
+                          <div className="p-2 bg-white rounded-2xl shadow-xl border-2 border-slate-300 flex-shrink-0">
+                            <QRCodeSVG value={publicUrl} size={76} level="L" marginSize={0} />
+                          </div>
+                        </div>
+                      ) : layout === 'stacked-card' ? (
+                        /* STACKED LAYOUT */
                         <div className="space-y-3">
                           <div
                             className={`w-full h-10 rounded-full px-3 flex items-center justify-between shadow ${
@@ -313,13 +360,12 @@ export const QRManager = () => {
                             </div>
                           </div>
 
-                          {/* Giant Scannable QR in Center */}
                           <div className="p-3 bg-white rounded-2xl shadow-xl border-2 border-slate-200 flex items-center justify-center mx-auto w-44 h-44">
-                            <QRCodeSVG value={publicUrl} size={150} level="M" marginSize={0} />
+                            <QRCodeSVG value={publicUrl} size={150} level="L" marginSize={0} />
                           </div>
                         </div>
                       ) : (
-                        /* HORIZONTAL CARD-PRINT BADGE (Enlarged Chunky QR on Right) */
+                        /* HORIZONTAL CAPSULE */
                         <div
                           className={`w-full h-16 sm:h-20 rounded-full px-3 sm:px-4 flex items-center justify-between shadow-lg transition-all ${
                             theme === 'dark'
@@ -331,7 +377,6 @@ export const QRManager = () => {
                               : 'bg-[#E8EAFD] text-[#14162B]'
                           }`}
                         >
-                          {/* Left Circle Icon */}
                           <div
                             className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center flex-shrink-0 ${
                               theme === 'dark'
@@ -346,7 +391,6 @@ export const QRManager = () => {
                             <Heart className="w-5 h-5 fill-current" />
                           </div>
 
-                          {/* Center Soundwave Bars */}
                           <div className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-3 h-10">
                             {waveHeights.map((h, i) => (
                               <div
@@ -365,12 +409,11 @@ export const QRManager = () => {
                             ))}
                           </div>
 
-                          {/* Large Chunky High-Scan QR Tag */}
                           <div className="p-1.5 bg-white rounded-xl shadow-md border border-slate-200 flex-shrink-0">
                             <QRCodeSVG
                               value={publicUrl}
                               size={52}
-                              level="M"
+                              level="L"
                               marginSize={0}
                             />
                           </div>
@@ -379,7 +422,9 @@ export const QRManager = () => {
 
                       {/* Bottom Instruction */}
                       <div
-                        className={`text-center font-sans font-bold text-xs sm:text-sm tracking-wide pt-1 ${
+                        className={`font-sans font-bold text-xs sm:text-sm tracking-wide pt-1 ${
+                          layout === 'id-card-stamp' ? 'text-left pl-2' : 'text-center'
+                        } ${
                           theme === 'dark'
                             ? 'text-white'
                             : theme === 'rose'
@@ -403,7 +448,19 @@ export const QRManager = () => {
                         <Layers className="w-3 h-3 text-rose-400" />
                         <span>Card Template Layout</span>
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <button
+                          onClick={() => setLayout('id-card-stamp')}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-2 ${
+                            layout === 'id-card-stamp'
+                              ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow'
+                              : 'bg-black/30 border-white/10 text-slate-400 hover:text-white'
+                          }`}
+                        >
+                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'id-card-stamp' ? 'text-emerald-400' : 'opacity-0'}`} />
+                          <span>ID Card Stamp (Best Scan)</span>
+                        </button>
+
                         <button
                           onClick={() => setLayout('card-print-large')}
                           className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-2 ${
@@ -413,7 +470,7 @@ export const QRManager = () => {
                           }`}
                         >
                           <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'card-print-large' ? 'text-rose-400' : 'opacity-0'}`} />
-                          <span>Horizontal Capsule (2x Larger QR)</span>
+                          <span>Horizontal Capsule</span>
                         </button>
 
                         <button
@@ -425,35 +482,8 @@ export const QRManager = () => {
                           }`}
                         >
                           <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'stacked-card' ? 'text-rose-400' : 'opacity-0'}`} />
-                          <span>Stacked Card Block (Giant QR)</span>
+                          <span>Stacked Block</span>
                         </button>
-                      </div>
-                    </div>
-
-                    {/* QR Density / Scan Optimization */}
-                    <div>
-                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
-                        <Maximize2 className="w-3 h-3 text-emerald-400" />
-                        <span>QR Module Scan Optimization</span>
-                      </label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { val: 1.1, label: 'Compact' },
-                          { val: 1.35, label: 'Card Print (Recommended)' },
-                          { val: 1.6, label: 'Maximum Size' },
-                        ].map((s) => (
-                          <button
-                            key={s.val}
-                            onClick={() => setQrScaleFactor(s.val)}
-                            className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${
-                              qrScaleFactor === s.val
-                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow'
-                                : 'bg-black/30 border-white/10 text-slate-400 hover:text-white'
-                            }`}
-                          >
-                            {s.label}
-                          </button>
-                        ))}
                       </div>
                     </div>
 
@@ -524,12 +554,12 @@ export const QRManager = () => {
                         {isGenerating ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Generating Card-Print Badge...</span>
+                            <span>Generating High-Scan Card Badge...</span>
                           </>
                         ) : (
                           <>
                             <Download className="w-4 h-4" />
-                            <span>Download Physical Card Badge (Enlarged High-Scan PNG)</span>
+                            <span>Download Physical ID-Card Badge (300 DPI High-Scan PNG)</span>
                           </>
                         )}
                       </button>
