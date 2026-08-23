@@ -22,6 +22,8 @@ import {
   Wand2,
   CheckCircle2,
   Smartphone,
+  Maximize2,
+  ShieldCheck,
 } from 'lucide-react';
 
 export const QRManager = () => {
@@ -34,7 +36,8 @@ export const QRManager = () => {
   const [topText, setTopText] = useState('OUR SONG ♡');
   const [bottomText, setBottomText] = useState('SCAN THE CODE');
   const [theme, setTheme] = useState('lavender'); // 'lavender', 'white', 'dark', 'rose'
-  const [layout, setLayout] = useState('qr-right'); // 'qr-right', 'qr-left-vinyl'
+  const [layout, setLayout] = useState('card-print-large'); // 'card-print-large', 'stacked-card'
+  const [qrScaleFactor, setQrScaleFactor] = useState(1.35); // 1.1, 1.35, 1.6
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
@@ -75,11 +78,12 @@ export const QRManager = () => {
         publicUrl,
         theme,
         layout,
+        qrScaleFactor,
       });
 
       const a = document.createElement('a');
       a.href = dataUrl;
-      a.download = `soundwave-sticker-${selectedSibling.cardId}-${theme}.png`;
+      a.download = `sibling-card-qr-${selectedSibling.cardId}-${theme}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -100,7 +104,7 @@ export const QRManager = () => {
   }
 
   const waveHeights = selectedSibling
-    ? getDeterministicWaveHeights(selectedSibling.cardId, layout === 'qr-left-vinyl' ? 24 : 18)
+    ? getDeterministicWaveHeights(selectedSibling.cardId, layout === 'stacked-card' ? 16 : 14)
     : [];
 
   const publicUrl = selectedSibling
@@ -112,11 +116,11 @@ export const QRManager = () => {
       {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight flex items-center gap-3">
-          <QrCode className="w-7 h-7 text-rose-400" />
-          <span>Soundwave Sticker & QR Studio</span>
+          <CreditCard className="w-7 h-7 text-rose-400" />
+          <span>Physical Card Print & QR Studio</span>
         </h1>
         <p className="text-slate-400 text-sm mt-1">
-          Generate scannable **Soundwave Memory Stickers** (*"OUR SONG ♡"*) and print-ready QR license cards.
+          Export high-scan **Physical Sibling Card Badges** with enlarged, chunky QR modules guaranteed to scan on plastic cards.
         </p>
       </div>
 
@@ -130,7 +134,7 @@ export const QRManager = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Sibling Selector (5 cols) */}
+          {/* Left Column: Sibling List & Selection (5 cols) */}
           <div className="lg:col-span-5 space-y-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between">
               <span>Select Sibling ({siblings.length})</span>
@@ -153,7 +157,7 @@ export const QRManager = () => {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="p-1.5 bg-white rounded-xl shadow flex-shrink-0">
-                        <QRCodeSVG value={sibUrl} size={48} level="H" marginSize={1} />
+                        <QRCodeSVG value={sibUrl} size={48} level="M" marginSize={1} />
                       </div>
 
                       <div className="min-w-0">
@@ -188,60 +192,68 @@ export const QRManager = () => {
               })}
             </div>
 
-            {/* Standard QR Code Quick Downloads */}
+            {/* Standalone Square QR Exports */}
             {selectedSibling && (
               <div className="glass-card rounded-2xl p-4 border border-white/5 space-y-3 pt-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Standard Full-Card QR Exports
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                    Standalone Full-Size Card QR
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-mono">1024px High-Res</span>
                 </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Best for pasting directly into Photoshop/Canva card templates at 15mm-25mm size.
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   <a
                     href={`/api/public/qr/${selectedSibling.cardId}?download=true&format=png`}
                     download
-                    className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+                    className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Square PNG</span>
+                    <span>Large PNG</span>
                   </a>
 
                   <a
                     href={`/api/public/qr/${selectedSibling.cardId}?download=true&format=svg`}
                     download
-                    className="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+                    className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Square SVG</span>
+                    <span>Vector SVG</span>
                   </a>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Right Column: Scannable Soundwave Sticker Studio (7 cols) */}
+          {/* Right Column: Physical Card Print Studio (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             {selectedSibling && (
               <>
-                {/* Live Sticker Preview Box */}
+                {/* Live Card Badge Preview Box */}
                 <div className="glass-panel rounded-3xl p-6 border border-white/10 space-y-6 shadow-2xl">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Wand2 className="w-4 h-4 text-rose-400" />
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
                       <h3 className="text-base font-serif font-bold text-white">
-                        Scannable Soundwave Sticker Preview
+                        Physical Card Print Preview
                       </h3>
                     </div>
-                    <div className="flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                      <Smartphone className="w-3 h-3" />
-                      <span>Phone Camera Scannable</span>
+                    <div className="flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-medium">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>Optimized for Plastic Cards</span>
                     </div>
                   </div>
 
-                  {/* The Exact Aesthetic Soundwave Sticker Card */}
+                  {/* The Physical Badge Preview */}
                   <div className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col items-center justify-center relative overflow-hidden">
-                    <div className="w-full max-w-lg space-y-2 select-none">
-                      {/* Top Header ("OUR SONG ♡") */}
+                    <div className={`w-full ${layout === 'stacked-card' ? 'max-w-xs' : 'max-w-lg'} space-y-2 select-none`}>
+                      {/* Top Header */}
                       <div
                         className={`text-left font-sans font-black text-sm sm:text-base tracking-wider ${
+                          layout === 'stacked-card' ? 'text-center' : ''
+                        } ${
                           theme === 'dark'
                             ? 'text-white'
                             : theme === 'rose'
@@ -254,49 +266,22 @@ export const QRManager = () => {
                         {topText.toUpperCase()}
                       </div>
 
-                      {/* Rounded Capsule Bar */}
-                      <div
-                        className={`w-full h-14 sm:h-16 rounded-full px-3 sm:px-4 flex items-center justify-between shadow-lg transition-all ${
-                          theme === 'dark'
-                            ? 'bg-[#181824] text-white border border-white/10'
-                            : theme === 'rose'
-                            ? 'bg-rose-50 text-rose-600'
-                            : theme === 'white'
-                            ? 'bg-white text-black border border-slate-200 shadow-md'
-                            : 'bg-[#E8EAFD] text-[#14162B]'
-                        }`}
-                      >
-                        {layout === 'qr-left-vinyl' ? (
-                          <>
-                            {/* Left Circular Scannable QR */}
-                            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-white shadow flex-shrink-0 p-0.5 border border-white/20">
-                              <QRCodeSVG value={publicUrl} size={40} level="H" marginSize={0} />
-                            </div>
-
-                            {/* Soundwave Bars across */}
-                            <div className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-3 h-8">
-                              {waveHeights.map((h, i) => (
-                                <div
-                                  key={i}
-                                  className={`w-1 sm:w-1.5 rounded-full transition-all ${
-                                    theme === 'dark'
-                                      ? 'bg-white'
-                                      : theme === 'rose'
-                                      ? 'bg-rose-600'
-                                      : theme === 'white'
-                                      ? 'bg-black'
-                                      : 'bg-[#14162B]'
-                                  }`}
-                                  style={{ height: `${Math.max(16, h * 100)}%` }}
-                                />
-                              ))}
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {/* Left Heart Icon */}
+                      {layout === 'stacked-card' ? (
+                        /* STACKED LAYOUT (Soundwave Top + Giant Scannable QR in Center) */
+                        <div className="space-y-3">
+                          <div
+                            className={`w-full h-10 rounded-full px-3 flex items-center justify-between shadow ${
+                              theme === 'dark'
+                                ? 'bg-[#181824] text-white border border-white/10'
+                                : theme === 'rose'
+                                ? 'bg-rose-50 text-rose-600'
+                                : theme === 'white'
+                                ? 'bg-white text-black border border-slate-200'
+                                : 'bg-[#E8EAFD] text-[#14162B]'
+                            }`}
+                          >
                             <div
-                              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
                                 theme === 'dark'
                                   ? 'bg-white text-black'
                                   : theme === 'rose'
@@ -306,15 +291,14 @@ export const QRManager = () => {
                                   : 'bg-[#14162B] text-white'
                               }`}
                             >
-                              <Heart className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
+                              <Heart className="w-3 h-3 fill-current" />
                             </div>
 
-                            {/* Center Soundwave Bars */}
-                            <div className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-3 h-8">
+                            <div className="flex-1 flex items-center justify-center gap-1 px-2 h-5">
                               {waveHeights.map((h, i) => (
                                 <div
                                   key={i}
-                                  className={`w-1 sm:w-1.5 rounded-full transition-all ${
+                                  className={`w-1 rounded-full ${
                                     theme === 'dark'
                                       ? 'bg-white'
                                       : theme === 'rose'
@@ -323,20 +307,77 @@ export const QRManager = () => {
                                       ? 'bg-black'
                                       : 'bg-[#14162B]'
                                   }`}
-                                  style={{ height: `${Math.max(16, h * 100)}%` }}
+                                  style={{ height: `${Math.max(20, h * 100)}%` }}
                                 />
                               ))}
                             </div>
+                          </div>
 
-                            {/* Right Scannable QR Tag */}
-                            <div className="p-1 bg-white rounded-lg shadow flex-shrink-0">
-                              <QRCodeSVG value={publicUrl} size={36} level="H" marginSize={0} />
-                            </div>
-                          </>
-                        )}
-                      </div>
+                          {/* Giant Scannable QR in Center */}
+                          <div className="p-3 bg-white rounded-2xl shadow-xl border-2 border-slate-200 flex items-center justify-center mx-auto w-44 h-44">
+                            <QRCodeSVG value={publicUrl} size={150} level="M" marginSize={0} />
+                          </div>
+                        </div>
+                      ) : (
+                        /* HORIZONTAL CARD-PRINT BADGE (Enlarged Chunky QR on Right) */
+                        <div
+                          className={`w-full h-16 sm:h-20 rounded-full px-3 sm:px-4 flex items-center justify-between shadow-lg transition-all ${
+                            theme === 'dark'
+                              ? 'bg-[#181824] text-white border border-white/10'
+                              : theme === 'rose'
+                              ? 'bg-rose-50 text-rose-600'
+                              : theme === 'white'
+                              ? 'bg-white text-black border border-slate-200 shadow-md'
+                              : 'bg-[#E8EAFD] text-[#14162B]'
+                          }`}
+                        >
+                          {/* Left Circle Icon */}
+                          <div
+                            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              theme === 'dark'
+                                ? 'bg-white text-black'
+                                : theme === 'rose'
+                                ? 'bg-rose-600 text-white'
+                                : theme === 'white'
+                                ? 'bg-black text-white'
+                                : 'bg-[#14162B] text-white'
+                            }`}
+                          >
+                            <Heart className="w-5 h-5 fill-current" />
+                          </div>
 
-                      {/* Bottom Instruction ("SCAN THE CODE ⤹") */}
+                          {/* Center Soundwave Bars */}
+                          <div className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-3 h-10">
+                            {waveHeights.map((h, i) => (
+                              <div
+                                key={i}
+                                className={`w-1.5 rounded-full transition-all ${
+                                  theme === 'dark'
+                                    ? 'bg-white'
+                                    : theme === 'rose'
+                                    ? 'bg-rose-600'
+                                    : theme === 'white'
+                                    ? 'bg-black'
+                                    : 'bg-[#14162B]'
+                                }`}
+                                style={{ height: `${Math.max(18, h * 100)}%` }}
+                              />
+                            ))}
+                          </div>
+
+                          {/* Large Chunky High-Scan QR Tag */}
+                          <div className="p-1.5 bg-white rounded-xl shadow-md border border-slate-200 flex-shrink-0">
+                            <QRCodeSVG
+                              value={publicUrl}
+                              size={52}
+                              level="M"
+                              marginSize={0}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Bottom Instruction */}
                       <div
                         className={`text-center font-sans font-bold text-xs sm:text-sm tracking-wide pt-1 ${
                           theme === 'dark'
@@ -354,38 +395,93 @@ export const QRManager = () => {
                     </div>
                   </div>
 
-                  {/* Customization Controls */}
+                  {/* Print Customization Controls */}
                   <div className="space-y-4 pt-2 border-t border-white/5">
-                    {/* Style / Layout Options */}
+                    {/* Badge Layout Mode */}
                     <div>
                       <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
                         <Layers className="w-3 h-3 text-rose-400" />
-                        <span>Scannable Badge Layout</span>
+                        <span>Card Template Layout</span>
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         <button
-                          onClick={() => setLayout('qr-right')}
-                          className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 ${
-                            layout === 'qr-right'
+                          onClick={() => setLayout('card-print-large')}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-2 ${
+                            layout === 'card-print-large'
                               ? 'bg-rose-500/20 border-rose-500 text-rose-300 shadow'
                               : 'bg-black/30 border-white/10 text-slate-400 hover:text-white'
                           }`}
                         >
-                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'qr-right' ? 'text-rose-400' : 'opacity-0'}`} />
-                          <span>Heart Icon + Soundwave + QR (Right)</span>
+                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'card-print-large' ? 'text-rose-400' : 'opacity-0'}`} />
+                          <span>Horizontal Capsule (2x Larger QR)</span>
                         </button>
 
                         <button
-                          onClick={() => setLayout('qr-left-vinyl')}
-                          className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 ${
-                            layout === 'qr-left-vinyl'
+                          onClick={() => setLayout('stacked-card')}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-2 ${
+                            layout === 'stacked-card'
                               ? 'bg-rose-500/20 border-rose-500 text-rose-300 shadow'
                               : 'bg-black/30 border-white/10 text-slate-400 hover:text-white'
                           }`}
                         >
-                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'qr-left-vinyl' ? 'text-rose-400' : 'opacity-0'}`} />
-                          <span>Vinyl QR (Left) + Soundwaves</span>
+                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'stacked-card' ? 'text-rose-400' : 'opacity-0'}`} />
+                          <span>Stacked Card Block (Giant QR)</span>
                         </button>
+                      </div>
+                    </div>
+
+                    {/* QR Density / Scan Optimization */}
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
+                        <Maximize2 className="w-3 h-3 text-emerald-400" />
+                        <span>QR Module Scan Optimization</span>
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { val: 1.1, label: 'Compact' },
+                          { val: 1.35, label: 'Card Print (Recommended)' },
+                          { val: 1.6, label: 'Maximum Size' },
+                        ].map((s) => (
+                          <button
+                            key={s.val}
+                            onClick={() => setQrScaleFactor(s.val)}
+                            className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${
+                              qrScaleFactor === s.val
+                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow'
+                                : 'bg-black/30 border-white/10 text-slate-400 hover:text-white'
+                            }`}
+                          >
+                            {s.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Color Theme Selector */}
+                    <div>
+                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
+                        <Palette className="w-3 h-3 text-rose-400" />
+                        <span>Color Theme</span>
+                      </label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[
+                          { id: 'lavender', label: 'Lavender', bg: 'bg-[#E8EAFD] text-[#14162B]' },
+                          { id: 'white', label: 'Crisp White', bg: 'bg-white text-black' },
+                          { id: 'dark', label: 'Midnight Dark', bg: 'bg-[#181824] text-white' },
+                          { id: 'rose', label: 'Rose Pink', bg: 'bg-rose-100 text-rose-600' },
+                        ].map((t) => (
+                          <button
+                            key={t.id}
+                            onClick={() => setTheme(t.id)}
+                            className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${t.bg} ${
+                              theme === t.id
+                                ? 'ring-2 ring-rose-500 border-transparent shadow-md'
+                                : 'opacity-70 hover:opacity-100 border-white/10'
+                            }`}
+                          >
+                            {t.label}
+                          </button>
+                        ))}
                       </div>
                     </div>
 
@@ -418,50 +514,22 @@ export const QRManager = () => {
                       </div>
                     </div>
 
-                    {/* Color Theme Selector */}
-                    <div>
-                      <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1">
-                        <Palette className="w-3 h-3 text-rose-400" />
-                        <span>Color Theme</span>
-                      </label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {[
-                          { id: 'lavender', label: 'Lavender (Classic)', bg: 'bg-[#E8EAFD] text-[#14162B]' },
-                          { id: 'white', label: 'Crisp White', bg: 'bg-white text-black' },
-                          { id: 'dark', label: 'Midnight Dark', bg: 'bg-[#181824] text-white' },
-                          { id: 'rose', label: 'Rose Pink', bg: 'bg-rose-100 text-rose-600' },
-                        ].map((t) => (
-                          <button
-                            key={t.id}
-                            onClick={() => setTheme(t.id)}
-                            className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${t.bg} ${
-                              theme === t.id
-                                ? 'ring-2 ring-rose-500 border-transparent shadow-md'
-                                : 'opacity-70 hover:opacity-100 border-white/10'
-                            }`}
-                          >
-                            {t.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
                     {/* Primary Download Button */}
                     <div className="pt-2">
                       <button
                         onClick={handleDownloadSticker}
                         disabled={isGenerating}
-                        className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-bold text-sm shadow-[0_4px_20px_rgba(244,63,94,0.35)] disabled:opacity-50 transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+                        className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-600 to-rose-600 hover:from-emerald-400 hover:to-rose-500 text-white font-bold text-sm shadow-[0_4px_25px_rgba(16,185,129,0.35)] disabled:opacity-50 transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
                       >
                         {isGenerating ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Generating Ultra High-Res Sticker...</span>
+                            <span>Generating Card-Print Badge...</span>
                           </>
                         ) : (
                           <>
                             <Download className="w-4 h-4" />
-                            <span>Download Scannable Soundwave Sticker (300 DPI PNG)</span>
+                            <span>Download Physical Card Badge (Enlarged High-Scan PNG)</span>
                           </>
                         )}
                       </button>
