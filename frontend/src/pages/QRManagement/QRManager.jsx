@@ -19,6 +19,8 @@ import {
   ShieldCheck,
   Heart,
   Sparkles,
+  Award,
+  Key,
 } from 'lucide-react';
 
 export const QRManager = () => {
@@ -31,7 +33,7 @@ export const QRManager = () => {
   const [topText, setTopText] = useState('OUR SONG ♡');
   const [bottomText, setBottomText] = useState('SCAN TO UNLOCK');
   const [theme, setTheme] = useState('lavender'); // 'lavender', 'white', 'dark', 'rose'
-  const [layout, setLayout] = useState('canva-card-box'); // 'canva-card-box', 'id-card-stamp', 'card-print-large'
+  const [layout, setLayout] = useState('canva-deluxe-passport'); // 'canva-deluxe-passport', 'canva-card-box', 'id-card-stamp'
   const [transparentBg, setTransparentBg] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -78,7 +80,7 @@ export const QRManager = () => {
 
       const a = document.createElement('a');
       a.href = dataUrl;
-      a.download = `sibling-canva-badge-${selectedSibling.cardId}-${layout}.png`;
+      a.download = `sibling-license-badge-${selectedSibling.cardId}-${layout}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -99,7 +101,7 @@ export const QRManager = () => {
   }
 
   const waveHeights = selectedSibling
-    ? getDeterministicWaveHeights(selectedSibling.cardId, layout === 'canva-card-box' ? 16 : 12)
+    ? getDeterministicWaveHeights(selectedSibling.cardId, layout === 'canva-deluxe-passport' ? 22 : 14)
     : [];
 
   const publicUrl = selectedSibling
@@ -115,7 +117,7 @@ export const QRManager = () => {
           <span>Canva Card Print & QR Studio</span>
         </h1>
         <p className="text-slate-400 text-sm mt-1">
-          Export high-scan **Sibling License Badges** custom-sized for Canva templates with giant, easily scannable QR codes.
+          Custom-tailored Sibling License badges with Soundwaves, Secret PIN hints, and high-scan QR codes.
         </p>
       </div>
 
@@ -232,29 +234,26 @@ export const QRManager = () => {
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-emerald-400" />
                       <h3 className="text-base font-serif font-bold text-white">
-                        Canva Free Space Badge Preview
+                        License Badge Live Preview
                       </h3>
                     </div>
                     <div className="flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-medium">
                       <CheckCircle2 className="w-3 h-3" />
-                      <span>Level-L Chunky QR (25mm Scan Size)</span>
+                      <span>Fills Canva Free Space</span>
                     </div>
                   </div>
 
                   {/* The Physical Badge Preview */}
                   <div className="p-6 sm:p-8 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col items-center justify-center relative overflow-hidden">
-                    <div className={`w-full ${layout === 'canva-card-box' ? 'max-w-xs' : 'max-w-lg'} space-y-3 select-none`}>
-                      {layout === 'canva-card-box' ? (
-                        /* CANVA CARD BOX (Custom-Fitted for the Free Space in ID Card) */
-                        <div className={`p-4 rounded-3xl transition-all ${
-                          transparentBg ? 'bg-transparent' : 'bg-[#E6E9FD]/40 border border-[#14162B]/10'
-                        } space-y-3`}>
-                          {/* Top Header */}
-                          <div className="text-center font-sans font-black text-sm sm:text-base tracking-wider text-[#14162B] dark:text-white">
+                    <div className="w-full max-w-md select-none">
+                      {layout === 'canva-deluxe-passport' ? (
+                        /* CANVA DELUXE PASSPORT (Fills the white space with cute matching details!) */
+                        <div className="space-y-3">
+                          {/* Top: Header & Soundwave */}
+                          <div className="text-left font-sans font-black text-sm sm:text-base tracking-wider text-[#14162B] dark:text-white">
                             {topText.toUpperCase()}
                           </div>
 
-                          {/* Soundwave Pill */}
                           <div className="w-full h-10 rounded-full px-3 flex items-center justify-between shadow bg-[#E6E9FD] text-[#14162B] border border-[#14162B]/10">
                             <div className="w-6 h-6 rounded-full bg-[#14162B] text-white flex items-center justify-center flex-shrink-0">
                               <Heart className="w-3 h-3 fill-current" />
@@ -271,47 +270,65 @@ export const QRManager = () => {
                             </div>
                           </div>
 
-                          {/* Giant High-Scan QR Code (25mm physical size) */}
+                          {/* Middle Grid: Left Badges & Right QR */}
+                          <div className="grid grid-cols-12 gap-3 items-center pt-1">
+                            {/* Left Badges */}
+                            <div className="col-span-6 bg-white p-3 rounded-2xl border border-[#14162B]/10 shadow-sm space-y-2">
+                              <div className="bg-[#E6E9FD] px-2 py-1 rounded-lg text-[10px] font-bold text-[#14162B] flex items-center gap-1">
+                                <Key className="w-3 h-3 text-rose-500" />
+                                <span>6-DIGIT SECRET PIN</span>
+                              </div>
+
+                              <div className="text-[10px] text-slate-500 font-semibold leading-tight">
+                                VALIDITY:
+                                <div className="text-xs font-black text-[#14162B]">LIFETIME MEMORIES ♡</div>
+                              </div>
+
+                              <div className="text-[10px] text-slate-500 font-semibold leading-tight">
+                                VAULT CODE:
+                                <div className="text-xs font-black text-rose-600">★ {selectedSibling.cardId} ★</div>
+                              </div>
+                            </div>
+
+                            {/* Right Large QR */}
+                            <div className="col-span-6 flex flex-col items-center">
+                              <div className="p-2 bg-white rounded-2xl shadow-xl border-2 border-slate-300">
+                                <QRCodeSVG value={publicUrl} size={110} level="L" marginSize={0} />
+                              </div>
+                              <div className="text-center font-sans font-bold text-[11px] text-[#14162B] dark:text-white pt-1">
+                                {bottomText.toUpperCase()} ⤹
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : layout === 'canva-card-box' ? (
+                        /* CANVA CARD BOX (Centered) */
+                        <div className="space-y-3">
+                          <div className="text-center font-sans font-black text-sm sm:text-base tracking-wider text-[#14162B] dark:text-white">
+                            {topText.toUpperCase()}
+                          </div>
+
+                          <div className="w-full h-10 rounded-full px-3 flex items-center justify-between shadow bg-[#E6E9FD] text-[#14162B] border border-[#14162B]/10">
+                            <div className="w-6 h-6 rounded-full bg-[#14162B] text-white flex items-center justify-center flex-shrink-0">
+                              <Heart className="w-3 h-3 fill-current" />
+                            </div>
+
+                            <div className="flex-1 flex items-center justify-center gap-1 px-2 h-5">
+                              {waveHeights.map((h, i) => (
+                                <div
+                                  key={i}
+                                  className="w-1 rounded-full bg-[#14162B]"
+                                  style={{ height: `${Math.max(25, h * 100)}%` }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+
                           <div className="p-3 bg-white rounded-2xl shadow-xl border-2 border-slate-300 flex items-center justify-center mx-auto w-44 h-44">
                             <QRCodeSVG value={publicUrl} size={150} level="L" marginSize={0} />
                           </div>
 
-                          {/* Bottom Text */}
                           <div className="text-center font-sans font-bold text-xs tracking-wide text-[#14162B] dark:text-white pt-0.5">
-                            <span>{bottomText.toUpperCase()}</span>
-                            <span className="ml-1.5 inline-block text-sm">⤹</span>
-                          </div>
-                        </div>
-                      ) : layout === 'id-card-stamp' ? (
-                        /* ID CARD STAMP (Side-by-Side) */
-                        <div className="space-y-2">
-                          <div className="text-left font-sans font-black text-sm sm:text-base tracking-wider text-[#14162B] dark:text-white">
-                            {topText.toUpperCase()}
-                          </div>
-
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex-1 h-14 rounded-full px-3 flex items-center justify-between shadow bg-[#E6E9FD] text-[#14162B] border border-[#14162B]/10">
-                              <div className="w-8 h-8 rounded-full bg-[#14162B] text-white flex items-center justify-center flex-shrink-0">
-                                <Heart className="w-4 h-4 fill-current" />
-                              </div>
-
-                              <div className="flex-1 flex items-center justify-center gap-1 px-2 h-8">
-                                {waveHeights.map((h, i) => (
-                                  <div
-                                    key={i}
-                                    className="w-1.5 rounded-full bg-[#14162B]"
-                                    style={{ height: `${Math.max(25, h * 100)}%` }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-
-                            <div className="p-2 bg-white rounded-2xl shadow-xl border-2 border-slate-300 flex-shrink-0">
-                              <QRCodeSVG value={publicUrl} size={76} level="L" marginSize={0} />
-                            </div>
-                          </div>
-
-                          <div className="text-left font-sans font-bold text-xs tracking-wide text-[#14162B] dark:text-white pl-2 pt-1">
                             <span>{bottomText.toUpperCase()}</span>
                             <span className="ml-1.5 inline-block text-sm">⤹</span>
                           </div>
@@ -362,27 +379,27 @@ export const QRManager = () => {
                       </label>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <button
-                          onClick={() => setLayout('canva-card-box')}
+                          onClick={() => setLayout('canva-deluxe-passport')}
                           className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-2 ${
-                            layout === 'canva-card-box'
+                            layout === 'canva-deluxe-passport'
                               ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow'
                               : 'bg-black/30 border-white/10 text-slate-400 hover:text-white'
                           }`}
                         >
-                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'canva-card-box' ? 'text-emerald-400' : 'opacity-0'}`} />
-                          <span>Canva Free-Space Box (Recommended)</span>
+                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'canva-deluxe-passport' ? 'text-emerald-400' : 'opacity-0'}`} />
+                          <span>Deluxe Passport (Fills White Space)</span>
                         </button>
 
                         <button
-                          onClick={() => setLayout('id-card-stamp')}
+                          onClick={() => setLayout('canva-card-box')}
                           className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-2 ${
-                            layout === 'id-card-stamp'
+                            layout === 'canva-card-box'
                               ? 'bg-rose-500/20 border-rose-500 text-rose-300 shadow'
                               : 'bg-black/30 border-white/10 text-slate-400 hover:text-white'
                           }`}
                         >
-                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'id-card-stamp' ? 'text-rose-400' : 'opacity-0'}`} />
-                          <span>Side-by-Side Stamp</span>
+                          <CheckCircle2 className={`w-3.5 h-3.5 ${layout === 'canva-card-box' ? 'text-rose-400' : 'opacity-0'}`} />
+                          <span>Centered Stacked</span>
                         </button>
 
                         <button
@@ -455,12 +472,12 @@ export const QRManager = () => {
                         {isGenerating ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Generating Canva Badge...</span>
+                            <span>Generating Deluxe Badge...</span>
                           </>
                         ) : (
                           <>
                             <Download className="w-4 h-4" />
-                            <span>Download Canva Free-Space Badge (Transparent 300 DPI PNG)</span>
+                            <span>Download Deluxe Canva Badge (Transparent 300 DPI PNG)</span>
                           </>
                         )}
                       </button>
