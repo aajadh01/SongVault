@@ -1,7 +1,7 @@
 import QRCode from 'qrcode';
 
 // Generates deterministic soundwave heights based on seed
-export const getDeterministicWaveHeights = (seed = 'THR7X9', barCount = 14) => {
+export const getDeterministicWaveHeights = (seed = 'THR7X9', barCount = 16) => {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     hash = (hash << 5) - hash + seed.charCodeAt(i);
@@ -26,18 +26,17 @@ export const generateSoundwaveStickerPNG = async ({
   cardId = 'THR7X9',
   publicUrl = '',
   theme = 'lavender', // 'lavender', 'white', 'dark', 'rose'
-  layout = 'canva-deluxe-passport', // 'canva-deluxe-passport', 'canva-card-box', 'id-card-stamp', 'card-print-large'
+  layout = 'canva-card-box', // 'canva-card-box', 'id-card-stamp', 'card-print-large'
   transparentBg = true,
 }) => {
   const canvas = document.createElement('canvas');
   const scale = 3; // 3x high-DPI supersampling for crisp print quality
 
-  const isDeluxe = layout === 'canva-deluxe-passport';
   const isCanvaBox = layout === 'canva-card-box';
   const isIdStamp = layout === 'id-card-stamp';
 
-  let width = 640 * scale;
-  let height = 480 * scale;
+  let width = 520 * scale;
+  let height = 520 * scale;
 
   if (isIdStamp) {
     width = 860 * scale;
@@ -45,9 +44,6 @@ export const generateSoundwaveStickerPNG = async ({
   } else if (layout === 'card-print-large') {
     width = 860 * scale;
     height = 320 * scale;
-  } else if (isCanvaBox) {
-    width = 520 * scale;
-    height = 520 * scale;
   }
 
   canvas.width = width;
@@ -103,164 +99,28 @@ export const generateSoundwaveStickerPNG = async ({
     }
   }
 
-  if (isDeluxe) {
+  if (isCanvaBox) {
     // ══════════════════════════════════════════════════════════════════════
-    // CANVA DELUXE PASSPORT LAYOUT (Soundwave + Stamp + Details + QR Code)
+    // CANVA CARD BOX LAYOUT (Clean centered: Title + Soundwave + Large QR)
     // ══════════════════════════════════════════════════════════════════════
-
-    // 1. Top Section: OUR SONG ♡ with Soundwave Pill
-    ctx.fillStyle = textColor;
-    ctx.font = `900 ${22 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillText(topText.toUpperCase(), 25 * scale, 20 * scale);
-
-    const pillX = 25 * scale;
-    const pillY = 54 * scale;
-    const pillW = width - (50 * scale);
-    const pillH = 50 * scale;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(pillX, pillY, pillW, pillH, pillH / 2);
-    ctx.fillStyle = capsuleBg;
-    ctx.fill();
-    ctx.lineWidth = 1.5 * scale;
-    ctx.strokeStyle = 'rgba(20, 22, 43, 0.12)';
-    ctx.stroke();
-    ctx.restore();
-
-    // Heart inside Pill
-    const circleX = pillX + 25 * scale;
-    const circleY = pillY + pillH / 2;
-    const circleR = 17 * scale;
-
-    ctx.beginPath();
-    ctx.arc(circleX, circleY, circleR, 0, Math.PI * 2);
-    ctx.fillStyle = barColor;
-    ctx.fill();
-
-    ctx.fillStyle = capsuleBg;
-    ctx.beginPath();
-    ctx.arc(circleX - 3.5 * scale, circleY - 2 * scale, 4 * scale, 0, Math.PI * 2);
-    ctx.arc(circleX + 3.5 * scale, circleY - 2 * scale, 4 * scale, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(circleX - 7.5 * scale, circleY - 1 * scale);
-    ctx.lineTo(circleX + 7.5 * scale, circleY - 1 * scale);
-    ctx.lineTo(circleX, circleY + 7 * scale);
-    ctx.closePath();
-    ctx.fill();
-
-    // Soundwave Bars
-    const waveHeights = getDeterministicWaveHeights(cardId, 22);
-    const startX = circleX + circleR + 15 * scale;
-    const endX = pillX + pillW - 20 * scale;
-    const barSpacing = (endX - startX) / waveHeights.length;
-    const barWidth = 6.5 * scale;
-
-    ctx.fillStyle = barColor;
-    waveHeights.forEach((h, idx) => {
-      const x = startX + idx * barSpacing + barWidth / 2;
-      const currentBarH = Math.max(8 * scale, h * 32 * scale);
-      const topY = pillY + (pillH - currentBarH) / 2;
-      ctx.beginPath();
-      ctx.roundRect(x - barWidth / 2, topY, barWidth, currentBarH, barWidth / 2);
-      ctx.fill();
-    });
-
-    // 2. Middle Grid: Left Info Badges + Right Large QR Stamp
-    const qrSize = 210 * scale;
-    const qrX = width - qrSize - (25 * scale);
-    const qrY = pillY + pillH + 18 * scale;
-
-    // Draw the High-Scan QR Code on Right
-    if (qrImg) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.roundRect(qrX - (6 * scale), qrY - (6 * scale), qrSize + (12 * scale), qrSize + (12 * scale), 20 * scale);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fill();
-      ctx.lineWidth = 2.5 * scale;
-      ctx.strokeStyle = 'rgba(20, 22, 43, 0.15)';
-      ctx.stroke();
-
-      ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
-      ctx.restore();
-    }
-
-    // Left Badges & Details Box (Fills the white space beautifully!)
-    const infoX = 25 * scale;
-    const infoY = qrY - (6 * scale);
-    const infoW = qrX - infoX - (18 * scale);
-    const infoH = qrSize + (12 * scale);
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(infoX, infoY, infoW, infoH, 18 * scale);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fill();
-    ctx.lineWidth = 1.5 * scale;
-    ctx.strokeStyle = 'rgba(20, 22, 43, 0.1)';
-    ctx.stroke();
-    ctx.restore();
-
-    // Info Details Content inside Box
-    let currentTextY = infoY + 20 * scale;
-
-    // 1. Secret Key Tag
-    ctx.fillStyle = '#E6E9FD';
-    ctx.beginPath();
-    ctx.roundRect(infoX + 16 * scale, currentTextY, infoW - (32 * scale), 36 * scale, 10 * scale);
-    ctx.fill();
-
-    ctx.fillStyle = textColor;
-    ctx.font = `bold ${13 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.fillText(`🔒 6-DIGIT SECRET PIN`, infoX + 26 * scale, currentTextY + 11 * scale);
-
-    currentTextY += 52 * scale;
-
-    // 2. Validity Tag
-    ctx.fillStyle = '#64748B';
-    ctx.font = `bold ${11 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
-    ctx.fillText(`VALIDITY:`, infoX + 20 * scale, currentTextY);
-    ctx.fillStyle = textColor;
-    ctx.font = `900 ${13 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
-    ctx.fillText(`LIFETIME OF MEMORIES ♡`, infoX + 20 * scale, currentTextY + 18 * scale);
-
-    currentTextY += 46 * scale;
-
-    // 3. Official Bond Seal
-    ctx.fillStyle = '#64748B';
-    ctx.font = `bold ${11 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
-    ctx.fillText(`VAULT CODE:`, infoX + 20 * scale, currentTextY);
-    ctx.fillStyle = '#E11D48';
-    ctx.font = `900 ${15 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
-    ctx.fillText(`★ ${cardId} ★`, infoX + 20 * scale, currentTextY + 18 * scale);
-
-    // 3. Bottom Instruction Line under QR
-    ctx.fillStyle = textColor;
-    ctx.font = `900 ${16 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText(`${bottomText.toUpperCase()}  ⤹`, qrX + qrSize / 2, qrY + qrSize + 22 * scale);
-
-  } else if (isCanvaBox) {
-    // CANVA CARD BOX LAYOUT
+    
+    // 1. Top Title: "OUR SONG ♡"
     ctx.fillStyle = textColor;
     ctx.font = `900 ${26 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     ctx.fillText(topText.toUpperCase(), width / 2, 28 * scale);
 
+    // 2. Soundwave Capsule Bar
     const pillX = 35 * scale;
     const pillY = 70 * scale;
     const pillW = width - (70 * scale);
     const pillH = 58 * scale;
+    const pillRadius = pillH / 2;
 
     ctx.save();
     ctx.beginPath();
-    ctx.roundRect(pillX, pillY, pillW, pillH, pillH / 2);
+    ctx.roundRect(pillX, pillY, pillW, pillH, pillRadius);
     ctx.fillStyle = capsuleBg;
     ctx.fill();
     ctx.lineWidth = 1.5 * scale;
@@ -268,32 +128,49 @@ export const generateSoundwaveStickerPNG = async ({
     ctx.stroke();
     ctx.restore();
 
-    // Heart
+    // Heart Icon inside Pill
     const circleX = pillX + 28 * scale;
     const circleY = pillY + pillH / 2;
     const circleR = 19 * scale;
+
     ctx.beginPath();
     ctx.arc(circleX, circleY, circleR, 0, Math.PI * 2);
     ctx.fillStyle = barColor;
     ctx.fill();
 
-    // Soundwaves
+    ctx.fillStyle = capsuleBg;
+    ctx.beginPath();
+    ctx.arc(circleX - 4 * scale, circleY - 2 * scale, 4.5 * scale, 0, Math.PI * 2);
+    ctx.arc(circleX + 4 * scale, circleY - 2 * scale, 4.5 * scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(circleX - 8.5 * scale, circleY - 1 * scale);
+    ctx.lineTo(circleX + 8.5 * scale, circleY - 1 * scale);
+    ctx.lineTo(circleX, circleY + 8 * scale);
+    ctx.closePath();
+    ctx.fill();
+
+    // Soundwave Bars
     const waveHeights = getDeterministicWaveHeights(cardId, 16);
     const startX = circleX + circleR + 14 * scale;
     const endX = pillX + pillW - 20 * scale;
-    const barSpacing = (endX - startX) / waveHeights.length;
+    const totalWaveWidth = endX - startX;
+    const barSpacing = totalWaveWidth / waveHeights.length;
     const barWidth = 6.5 * scale;
+    const maxBarH = 38 * scale;
 
     ctx.fillStyle = barColor;
     waveHeights.forEach((h, idx) => {
       const x = startX + idx * barSpacing + barWidth / 2;
-      const currentBarH = Math.max(9 * scale, h * 38 * scale);
+      const currentBarH = Math.max(9 * scale, h * maxBarH);
       const topY = pillY + (pillH - currentBarH) / 2;
+
       ctx.beginPath();
       ctx.roundRect(x - barWidth / 2, topY, barWidth, currentBarH, barWidth / 2);
       ctx.fill();
     });
 
+    // 3. Large Center Scannable QR Code (250px high-scan block)
     if (qrImg) {
       const qrSize = 250 * scale;
       const qrX = (width - qrSize) / 2;
@@ -307,17 +184,19 @@ export const generateSoundwaveStickerPNG = async ({
       ctx.lineWidth = 3 * scale;
       ctx.strokeStyle = 'rgba(20, 22, 43, 0.15)';
       ctx.stroke();
+
       ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
       ctx.restore();
     }
 
+    // 4. Bottom Instruction
     ctx.fillStyle = textColor;
     ctx.font = `bold ${20 * scale}px "Plus Jakarta Sans", "Inter", sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillText(`${bottomText.toUpperCase()}  ⤹`, width / 2, height - (36 * scale));
 
   } else if (isIdStamp) {
-    // ID CARD STAMP
+    // ID CARD STAMP (Side-by-Side)
     const qrSize = 160 * scale;
     const qrX = width - qrSize - (35 * scale);
     const qrY = 56 * scale;
