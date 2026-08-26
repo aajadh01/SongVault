@@ -35,6 +35,7 @@ export const RecordingManager = () => {
   // Form State
   const [title, setTitle] = useState('');
   const [backgroundMediaType, setBackgroundMediaType] = useState('none'); // 'video' | 'image' | 'none'
+  const [videoAspectRatio, setVideoAspectRatio] = useState('4:3');
   const [description, setDescription] = useState('');
   const [personalMessage, setPersonalMessage] = useState('');
   const [lyrics, setLyrics] = useState('');
@@ -85,6 +86,7 @@ export const RecordingManager = () => {
     setEditingRecording(null);
     setTitle('');
     setBackgroundMediaType('none');
+    setVideoAspectRatio('4:3');
     setDescription('');
     setPersonalMessage('');
     setLyrics('');
@@ -107,6 +109,7 @@ export const RecordingManager = () => {
     setEditingRecording(rec);
     setTitle(rec.title || '');
     setBackgroundMediaType(rec.backgroundMediaType || 'none');
+    setVideoAspectRatio(rec.videoAspectRatio || '4:3');
     setDescription(rec.description || '');
     setPersonalMessage(rec.personalMessage || '');
     setLyrics(rec.lyrics || '');
@@ -144,6 +147,7 @@ export const RecordingManager = () => {
       const data = new FormData();
       data.append('title', title.trim());
       data.append('backgroundMediaType', backgroundMediaType);
+      data.append('videoAspectRatio', videoAspectRatio);
       data.append('description', description.trim());
       data.append('personalMessage', personalMessage.trim());
       data.append('lyrics', lyrics.trim());
@@ -597,10 +601,41 @@ export const RecordingManager = () => {
                       className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-purple-500"
                     />
 
+                    {/* Video Aspect Ratio Selector */}
+                    <div className="pt-2">
+                      <label className="block text-[11px] font-semibold text-purple-300 uppercase tracking-wider mb-1.5">
+                        Video Aspect Ratio / Fit
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {[
+                          { id: '4:3', label: '4:3 Standard', desc: 'No Cropping' },
+                          { id: '16:9', label: '16:9 Landscape', desc: 'Widescreen' },
+                          { id: 'cover', label: '9:16 Vertical', desc: 'Full-bleed' },
+                          { id: 'contain', label: 'Fit Inside', desc: 'Full Video' },
+                        ].map((ratio) => (
+                          <button
+                            key={ratio.id}
+                            type="button"
+                            onClick={() => setVideoAspectRatio(ratio.id)}
+                            className={`p-2 rounded-xl text-left border transition-all ${
+                              videoAspectRatio === ratio.id
+                                ? 'bg-purple-500/20 border-purple-500 text-white shadow-sm'
+                                : 'bg-black/30 border-white/10 text-slate-400 hover:text-white'
+                            }`}
+                          >
+                            <p className="text-xs font-bold">{ratio.label}</p>
+                            <p className="text-[10px] text-slate-400">{ratio.desc}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* Live Video Preview in Modal */}
                     {(backgroundVideoFile || backgroundVideoUrl) && (
-                      <div className="mt-2 p-2 rounded-xl bg-black/50 border border-purple-500/30 flex items-center gap-3">
-                        <div className="w-20 h-14 rounded-lg bg-black overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10">
+                      <div className="mt-2 p-2.5 rounded-xl bg-black/50 border border-purple-500/30 flex items-center gap-3">
+                        <div className={`w-24 h-16 rounded-lg bg-black overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10 ${
+                          videoAspectRatio === '4:3' ? 'aspect-[4/3]' : videoAspectRatio === '16:9' ? 'aspect-video' : 'aspect-square'
+                        }`}>
                           <video
                             src={backgroundVideoFile ? URL.createObjectURL(backgroundVideoFile) : backgroundVideoUrl}
                             muted
@@ -611,11 +646,11 @@ export const RecordingManager = () => {
                           />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-[11px] font-semibold text-purple-200 truncate">
-                            {backgroundVideoFile ? backgroundVideoFile.name : 'Remote Video Attached'}
+                          <p className="text-xs font-bold text-purple-200 truncate">
+                            {backgroundVideoFile ? backgroundVideoFile.name : 'Attached Video'}
                           </p>
-                          <p className="text-[10px] text-slate-400">
-                            Auto-centered with ambient color fill
+                          <p className="text-[11px] text-emerald-400 font-medium">
+                            {videoAspectRatio} Aspect Ratio • Zero Blur • Crisp Original
                           </p>
                         </div>
                       </div>

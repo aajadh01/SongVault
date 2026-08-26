@@ -27,6 +27,11 @@ const RecordingSchema = new mongoose.Schema(
       default: 'none',
       required: true,
     },
+    videoAspectRatio: {
+      type: String,
+      enum: ['4:3', '16:9', 'cover', 'contain'],
+      default: '4:3',
+    },
     backgroundVideoUrl: {
       type: String,
       default: '',
@@ -67,7 +72,5 @@ const RecordingSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-RecordingSchema.index({ siblingId: 1, order: 1 });
 
 export const Recording = mongoose.model('Recording', RecordingSchema);

@@ -15,6 +15,7 @@ import {
   Music,
   Disc3,
   Sparkles,
+  Info,
 } from 'lucide-react';
 
 export const MusicPlayer = ({
@@ -36,6 +37,7 @@ export const MusicPlayer = ({
   const [isLooping, setIsLooping] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [showTitle, setShowTitle] = useState(true);
   const [audioError, setAudioError] = useState(null);
 
   const isVideoBg = recording?.backgroundMediaType === 'video';
@@ -55,9 +57,23 @@ export const MusicPlayer = ({
       audioRef.current.currentTime = 0;
       setCurrentTime(0);
       setAudioError(null);
+      setShowTitle(true);
       audioRef.current.load();
     }
   }, [recording?.audioUrl]);
+
+  // 7-second auto-vanish for video background title & description
+  useEffect(() => {
+    if (isVideoBg && isPlaying) {
+      setShowTitle(true);
+      const timer = setTimeout(() => {
+        setShowTitle(false);
+      }, 7000);
+      return () => clearTimeout(timer);
+    } else if (!isPlaying) {
+      setShowTitle(true);
+    }
+  }, [isPlaying, isVideoBg, recording?._id]);
 
   // Handle play/pause
   const togglePlay = () => {
@@ -105,6 +121,7 @@ export const MusicPlayer = ({
       onNext();
     } else {
       setIsPlaying(false);
+      setShowTitle(true);
     }
   };
 
@@ -178,6 +195,19 @@ export const MusicPlayer = ({
         )}
 
         <div className="flex items-center gap-2">
+          {/* Song Info & Note Toggle Button (for video backgrounds) */}
+          {isVideoBg && (
+            <button
+              onClick={() => setShowTitle(!showTitle)}
+              className={`p-2.5 rounded-full glass-card transition-all shadow ${
+                showTitle ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' : 'text-slate-300 hover:text-white'
+              }`}
+              title="Toggle Song Info"
+            >
+              <Info className="w-4 h-4" />
+            </button>
+          )}
+
           {recording?.personalMessage && (
             <button
               onClick={() => setShowMessage(!showMessage)}
@@ -202,8 +232,13 @@ export const MusicPlayer = ({
       </header>
 
       {/* Main Center Stage */}
-      <div className="w-full flex flex-col items-center my-auto py-4">
-        {/* Only show Cover Box if NOT Video background */}
+      <div
+        className="w-full flex-1 flex flex-col items-center justify-center my-auto py-4 cursor-pointer"
+        onClick={() => {
+          if (isVideoBg) setShowTitle(!showTitle);
+        }}
+      >
+        {/* Cover Box for Audio / Non-Video Backgrounds */}
         {!isVideoBg && (
           <motion.div
             animate={isPlaying ? { scale: [1, 1.02, 1] } : { scale: 1 }}
@@ -229,27 +264,38 @@ export const MusicPlayer = ({
           </motion.div>
         )}
 
-        {/* Track Title & Subtitle with subtle shadow for crystal readability on videos */}
-        <div className="text-center px-4 max-w-sm">
-          <div className="text-xs uppercase tracking-widest text-rose-400 font-semibold mb-1 flex items-center justify-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-            <Music className="w-3.5 h-3.5" />
-            <span>Our Memory Song</span>
-          </div>
+        {/* Track Title & Short Message (Shows for first 7 seconds, then vanishes gracefully) */}
+        <AnimatePresence>
+          {(showTitle || !isVideoBg) && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.7, ease: 'easeInOut' }}
+              className="text-center px-4 max-w-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-xs uppercase tracking-widest text-rose-400 font-semibold mb-1 flex items-center justify-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                <Music className="w-3.5 h-3.5" />
+                <span>Our Memory Song</span>
+              </div>
 
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight line-clamp-1 mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-            {recording?.title || 'Untitled Recording'}
-          </h2>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight line-clamp-2 mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                {recording?.title || 'Untitled Recording'}
+              </h2>
 
-          {recording?.description ? (
-            <p className="text-slate-200 text-xs sm:text-sm line-clamp-2 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] font-medium">
-              {recording.description}
-            </p>
-          ) : (
-            <p className="text-slate-300 text-xs italic drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-              {sibling?.welcomeMessage || 'A special moment in time.'}
-            </p>
+              {recording?.description ? (
+                <p className="text-slate-200 text-xs sm:text-sm line-clamp-2 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] font-medium">
+                  {recording.description}
+                </p>
+              ) : (
+                <p className="text-slate-300 text-xs italic drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                  {sibling?.welcomeMessage || 'A special moment in time.'}
+                </p>
+              )}
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
 
         {/* Personal Message Card Drawer */}
         <AnimatePresence>
@@ -259,6 +305,7 @@ export const MusicPlayer = ({
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: 10, height: 0 }}
               className="w-full mt-4 glass-card rounded-2xl p-4 border border-rose-500/30 text-center relative overflow-hidden shadow-2xl backdrop-blur-xl"
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-center gap-1 text-xs text-rose-400 font-semibold uppercase tracking-wider mb-1">
                 <Heart className="w-3 h-3 fill-rose-500" />

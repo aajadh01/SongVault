@@ -25,6 +25,7 @@ export const createRecording = async (req, res) => {
     const {
       title,
       backgroundMediaType = 'none',
+      videoAspectRatio = '4:3',
       description,
       personalMessage,
       lyrics,
@@ -71,6 +72,7 @@ export const createRecording = async (req, res) => {
       audioUrl,
       coverImageUrl,
       backgroundMediaType,
+      videoAspectRatio: videoAspectRatio || '4:3',
       backgroundVideoUrl: backgroundMediaType === 'video' ? backgroundVideoUrl : '',
       backgroundImageUrl: backgroundMediaType === 'image' ? backgroundImageUrl : '',
       description: description ? description.trim() : '',
@@ -103,6 +105,7 @@ export const updateRecording = async (req, res) => {
     const {
       title,
       backgroundMediaType,
+      videoAspectRatio,
       description,
       personalMessage,
       lyrics,
@@ -119,6 +122,7 @@ export const updateRecording = async (req, res) => {
     if (duration !== undefined) recording.duration = Number(duration);
     if (isActive !== undefined) recording.isActive = isActive === 'true' || isActive === true;
     if (backgroundMediaType) recording.backgroundMediaType = backgroundMediaType;
+    if (videoAspectRatio) recording.videoAspectRatio = videoAspectRatio;
 
     if (req.files) {
       if (req.files.audio && req.files.audio[0]) {
