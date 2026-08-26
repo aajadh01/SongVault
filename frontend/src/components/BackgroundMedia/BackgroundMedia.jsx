@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export const BackgroundMedia = ({ recording, siblingCover, isPlaying }) => {
   const videoRef = useRef(null);
+  const ambientVideoRef = useRef(null);
 
   const mediaType = recording?.backgroundMediaType || 'none';
   const videoUrl = recording?.backgroundVideoUrl;
@@ -10,19 +11,23 @@ export const BackgroundMedia = ({ recording, siblingCover, isPlaying }) => {
 
   // Synchronize video playback with audio play/pause state
   useEffect(() => {
-    if (mediaType === 'video' && videoRef.current) {
+    if (mediaType === 'video') {
       if (isPlaying) {
-        videoRef.current.play().catch((err) => {
-          console.warn('Background video play failed:', err);
-        });
+        if (videoRef.current) {
+          videoRef.current.play().catch((err) => console.warn('Hero video play failed:', err));
+        }
+        if (ambientVideoRef.current) {
+          ambientVideoRef.current.play().catch((err) => console.warn('Ambient video play failed:', err));
+        }
       } else {
-        videoRef.current.pause();
+        if (videoRef.current) videoRef.current.pause();
+        if (ambientVideoRef.current) ambientVideoRef.current.pause();
       }
     }
   }, [isPlaying, mediaType, videoUrl]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none bg-[#0a0a0e]">
       <AnimatePresence mode="wait">
         {mediaType === 'video' && videoUrl ? (
           <motion.div
@@ -31,20 +36,39 @@ export const BackgroundMedia = ({ recording, siblingCover, isPlaying }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden"
           >
+            {/* 1. Ambient Background Layer: Blurs & fills 100% of the screen (eliminates black bars for 4:3 videos) */}
             <video
-              ref={videoRef}
+              ref={ambientVideoRef}
               src={videoUrl}
               muted
               playsInline
               loop
               preload="auto"
-              className="w-full h-full object-cover transform scale-[1.02]"
+              className="absolute inset-0 w-full h-full object-cover filter blur-3xl scale-125 opacity-45 transform pointer-events-none"
             />
-            {/* Restored cinematic dark gradient and subtle atmospheric overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0e] via-[#0a0a0e]/50 to-[#0a0a0e]/75 pointer-events-none" />
-            <div className="absolute inset-0 bg-black/35 backdrop-blur-[1.5px] pointer-events-none" />
+
+            {/* 2. Main Hero Video Layer: Preserves 4:3, 16:9, and 9:16 aspect ratios without cropping critical content */}
+            <div className="relative z-10 w-full h-full flex items-center justify-center">
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                muted
+                playsInline
+                loop
+                preload="auto"
+                className="w-full h-full object-cover md:object-contain max-h-screen"
+                style={{
+                  // Ensures 4:3 videos maintain natural framing while filling vertical spaces elegantly
+                  objectPosition: 'center center',
+                }}
+              />
+            </div>
+
+            {/* 3. Cinematic Atmospheric Vignette & Controls Gradient */}
+            <div className="absolute inset-0 z-20 bg-gradient-to-t from-[#0a0a0e] via-[#0a0a0e]/40 to-[#0a0a0e]/65 pointer-events-none" />
+            <div className="absolute inset-0 z-20 bg-black/25 backdrop-blur-[1px] pointer-events-none" />
           </motion.div>
         ) : mediaType === 'image' && imageUrl ? (
           <motion.div
@@ -53,15 +77,24 @@ export const BackgroundMedia = ({ recording, siblingCover, isPlaying }) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.0, ease: 'easeOut' }}
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden"
           >
+            {/* Ambient Image Background */}
+            <img
+              src={imageUrl}
+              alt="Memory Ambient"
+              className="absolute inset-0 w-full h-full object-cover filter blur-2xl scale-125 opacity-40 transform pointer-events-none"
+            />
+
+            {/* Main Image */}
             <img
               src={imageUrl}
               alt="Memory Background"
-              className="w-full h-full object-cover brightness-85 transform scale-100 transition-transform duration-1000"
+              className="relative z-10 w-full h-full object-cover md:object-contain brightness-90 transform scale-100 transition-transform duration-1000"
             />
-            {/* Atmospheric dark gradient for image */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0e] via-[#0a0a0e]/60 to-[#0a0a0e]/80 pointer-events-none" />
+
+            {/* Atmospheric dark gradient */}
+            <div className="absolute inset-0 z-20 bg-gradient-to-t from-[#0a0a0e] via-[#0a0a0e]/50 to-[#0a0a0e]/75 pointer-events-none" />
           </motion.div>
         ) : (
           <motion.div

@@ -575,9 +575,14 @@ export const RecordingManager = () => {
                 {/* Conditional Dynamic Media Uploaders */}
                 {backgroundMediaType === 'video' && (
                   <div className="pt-2 space-y-2 animate-fadeIn">
-                    <span className="text-[11px] text-purple-300 font-medium">
-                      Upload Background Video (.mp4, .webm)
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-purple-300 font-medium">
+                        Upload Background Video (.mp4, .webm, .mov)
+                      </span>
+                      <span className="text-[10px] text-emerald-400 font-mono">
+                        4:3, 16:9 & 9:16 Auto-Adapted
+                      </span>
+                    </div>
                     <input
                       type="file"
                       accept="video/mp4,video/webm,video/quicktime"
@@ -591,6 +596,30 @@ export const RecordingManager = () => {
                       placeholder="Or background video URL (https://.../video.mp4)"
                       className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-purple-500"
                     />
+
+                    {/* Live Video Preview in Modal */}
+                    {(backgroundVideoFile || backgroundVideoUrl) && (
+                      <div className="mt-2 p-2 rounded-xl bg-black/50 border border-purple-500/30 flex items-center gap-3">
+                        <div className="w-20 h-14 rounded-lg bg-black overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/10">
+                          <video
+                            src={backgroundVideoFile ? URL.createObjectURL(backgroundVideoFile) : backgroundVideoUrl}
+                            muted
+                            autoPlay
+                            loop
+                            playsInline
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-semibold text-purple-200 truncate">
+                            {backgroundVideoFile ? backgroundVideoFile.name : 'Remote Video Attached'}
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            Auto-centered with ambient color fill
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
